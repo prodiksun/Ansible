@@ -1,0 +1,26 @@
+---
+- name: 'Reconfigure debian pam'
+  ansible.builtin.command: '/usr/sbin/pam-auth-update --force'
+  environment:
+    DEBIAN_FRONTEND: 'noninteractive'
+  changed_when: true
+  when: ansible_os_family == "Debian"
+
+- name: 'Reconfigure redhat pam'
+  ansible.builtin.command: "/usr/sbin/authconfig \
+    --enablesssd --enablerfc2307bis \
+    --enablesssdauth --disableforcelegacy \
+    --enablelocauthorize --enablemkhomedir \
+    --enablepamaccess --updateall"
+  changed_when: true
+  when: ansible_os_family == "RedHat"
+
+- name: 'Restart sssd'
+  ansible.builtin.systemd:
+    name: 'sssd'
+    state: 'restarted'
+
+- name: 'Clear sssd cache'
+  ansible.builtin.command: '/usr/sbin/sss_cache -E'
+  changed_when: true
+  failed_when: false

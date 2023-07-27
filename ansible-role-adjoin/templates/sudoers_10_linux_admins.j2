@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+{% if allow_project_admins == true %}
+{% for domain in adjoin_domains %}
+%{{ domain.linux_admins|regex_replace(' ','\ ')|lower }} ALL=(ALL) NOPASSWD:ALL
+%{{ domain.project_admins|regex_replace(' ','\ ')|lower }} ALL=(ALL) NOPASSWD:ALL
+{% endfor %}
+{% else %}
+{% for domain in adjoin_domains %}
+%{{ domain.linux_admins|regex_replace(' ','\ ')|lower }} ALL=(ALL) NOPASSWD:ALL
+{% endfor %}
+{% endif %}
